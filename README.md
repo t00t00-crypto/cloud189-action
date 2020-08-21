@@ -42,4 +42,6 @@
 
 2. 可以通过 ***Star*** 手动启动一次。
 
+3.Fork后需要修改一下任意文件,比如Readme,后续才会自动定期执行
+
    ![image-20200727142617807](https://i.loli.net/2020/07/27/87oQeLJOlZvU3Ep.png)
