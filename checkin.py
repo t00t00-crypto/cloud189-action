@@ -35,13 +35,17 @@ def main():
         "Accept-Encoding" : "gzip, deflate",
     }
     response = s.get(url,headers=headers)
-    if ("errorCode" in response.text):
+    try:
+        description = response.json()['description']
+    except IOError:
         print(response.text)
     else:
         description = response.json()['description']
         print(f"抽奖获得{description}")
     response = s.get(url2,headers=headers)
-    if ("errorCode" in response.text):
+    try:
+        description = response.json()['description']
+    except IOError:
         print(response.text)
     else:
         description = response.json()['description']
