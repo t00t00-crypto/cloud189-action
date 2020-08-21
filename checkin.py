@@ -37,19 +37,17 @@ def main():
     response = s.get(url,headers=headers)
     try:
         description = response.json()['description']
-    except IOError:
+    except:
         print(response.text)
     else:
-        description = response.json()['description']
         print(f"抽奖获得{description}")
-    response = s.get(url2,headers=headers)
+    response2 = s.get(url2,headers=headers)
     try:
-        description = response.json()['description']
-    except IOError:
-        print(response.text)
+        description2 = response2.json()['description']
+    except:
+        print(response2.text)
     else:
-        description = response.json()['description']
-        print(f"抽奖获得{description}")
+        print(f"抽奖2获得{description2}")
 
 BI_RM = list("0123456789abcdefghijklmnopqrstuvwxyz")
 def int2char(a):
