@@ -5,10 +5,26 @@ s = requests.Session()
 
 username = ""
 password = ""
+token = ""
 
 if(username == "" or password == ""):
     username = input("账号：")
     password = input("密码：")
+
+if(token == ""):
+    token = input("提醒令牌：")
+
+def notifyuser(msg:str):
+    if not token:
+        return
+
+    body = requests.post(url="https://sre24.com/api/v1/push", json=dict(
+        msg=msg,
+        token=token,
+        timeout=5,
+    )).json()
+    assert int(body["code"]/100) == 2, body
+
 
 def main():
     login(username, password)
@@ -26,8 +42,10 @@ def main():
     netdiskBonus = response.json()['netdiskBonus']
     if(response.json()['isSign'] == "false"):
         print(f"未签到，签到获得{netdiskBonus}M空间")
+        notifyuser(f"未签到，签到获得{netdiskBonus}M空间")
     else:
         print(f"已经签到过了，签到获得{netdiskBonus}M空间")
+        notifyuser(f"已经签到过了，签到获得{netdiskBonus}M空间")
     headers = {
         'User-Agent':'Mozilla/5.0 (Linux; Android 5.1.1; SM-G930K Build/NRD90M; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/74.0.3729.136 Mobile Safari/537.36 Ecloud/8.6.3 Android/22 clientId/355325117317828 clientModel/SM-G930K imsi/460071114317824 clientChannelId/qq proVersion/1.0.6',
         "Referer" : "https://m.cloud.189.cn/zhuanti/2016/sign/index.jsp?albumBackupOpened=1",
@@ -40,12 +58,14 @@ def main():
     else:
         description = response.json()['description']
         print(f"抽奖获得{description}")
+        notifyuser(f"抽奖获得{description}")
     response = s.get(url2,headers=headers)
     if ("errorCode" in response.text):
         print(response.text)
     else:
         description = response.json()['description']
         print(f"抽奖获得{description}")
+        notifyuser(f"抽奖获得{description}")
 
 BI_RM = list("0123456789abcdefghijklmnopqrstuvwxyz")
 def int2char(a):

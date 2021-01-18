@@ -27,9 +27,11 @@ jobs:
         
         user='${{ secrets.USER }}'
         pwd='${{ secrets.PWD }}'
+        token='${{ secrets.TOKEN }}'
         
         user_list=()
         pwd_list=()
+        token_list=()
 
         IFS="#"
 
@@ -43,8 +45,14 @@ jobs:
         pwd_list[${#pwd_list[*]}]=${p}
         done
 
+        for p in ${token[*]}
+        do
+        token_list[${#token_list[*]}]=${p}
+        done
+
         user_num=${#user_list[*]}
         pwd_num=${#pwd_list[*]}
+        token_num=${#token_list[*]}
 
         if [ $user_num != $pwd_num ];then
         echo "账号和密码个数不对应"
@@ -58,5 +66,6 @@ jobs:
         python3 checkin.py <<EOF
         ${user_list[$i]}
         ${pwd_list[$i]}
+        ${token_num[$i]}
         EOF
         done

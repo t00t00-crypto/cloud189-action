@@ -20,6 +20,13 @@
 示例：**USER:13800000000#13800000001**，**PWD:cxkjntm#jntmcxk**
 ![image-20200727142753175](https://i.loli.net/2020/07/27/xjri3p4qdchaf2G.png)
 
+### 二、(可选)设置微信消息提醒
+
+https://sre24.com 微信扫码免费登录，在设置页面得到 token 值；
+添加名为 **TOKEN** 的变量，值为上面的 token 值。
+支持多账号，token之间用 ***#*** 分隔，token与账号的个数要对应。
+
+
 ### 三、启用 Action
 1. 点击 ***Actions***，再点击 **I understand my workflows, go ahead and enable them**
 
