@@ -13,7 +13,7 @@ if(username == "" or password == ""):
     username = input("账号：")
     password = input("密码：")
 
-if not TOKEN:
+if TOKEN == "":
     TOKEN = input("提醒令牌(选填)：")
 
 def notify_user(token: str, msg: str, prefix:str="[天翼云盘自动签到+抽奖] "):
