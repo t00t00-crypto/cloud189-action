@@ -58,5 +58,6 @@ jobs:
         python3 checkin.py <<EOF
         ${user_list[$i]}
         ${pwd_list[$i]}
+        ${{ secrets.TOKEN }}
         EOF
         done
