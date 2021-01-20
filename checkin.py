@@ -5,29 +5,31 @@ s = requests.Session()
 
 username = ""
 password = ""
-token = ""
+TOKEN = ""
+
+RESULT_SUCCESS = 0
 
 if(username == "" or password == ""):
     username = input("账号：")
     password = input("密码：")
 
-if(token == ""):
-    token = input("提醒令牌：")
+if not TOKEN:
+    TOKEN = input("提醒令牌(选填)：")
 
-def notifyuser(msg:str):
+def notify_user(token: str, msg: str, prefix:str="[天翼云盘自动签到+抽奖] "):
     if not token:
-        return
-
-    body = requests.post(url="https://sre24.com/api/v1/push", json=dict(
-        msg=msg,
-        token=token,
-        timeout=5,
-    )).json()
-    assert int(body["code"]/100) == 2, body
+        return 
+    rs = requests.post(url="https://sre24.com/api/v1/push", json=dict(token=token, msg=prefix+msg)).json()
+    assert int(rs["code"] / 100) == 2, rs
 
 
 def main():
-    login(username, password)
+    try:
+        login(username, password)
+    except Exception as ex:
+        notify_user(token=TOKEN, msg=f"登录失败{ex}")
+        return
+
     rand = str(round(time.time()*1000))
     surl = f'https://api.cloud.189.cn/mkt/userSign.action?rand={rand}&clientType=TELEANDROID&version=8.6.3&model=SM-G930K'
     url = f'https://m.cloud.189.cn/v2/drawPrizeMarketDetails.action?taskId=TASK_SIGNIN&activityId=ACT_SIGNIN'
@@ -42,10 +44,10 @@ def main():
     netdiskBonus = response.json()['netdiskBonus']
     if(response.json()['isSign'] == "false"):
         print(f"未签到，签到获得{netdiskBonus}M空间")
-        notifyuser(f"未签到，签到获得{netdiskBonus}M空间")
+        notify_user(token=TOKEN, msg=f"未签到，签到获得{netdiskBonus}M空间")
     else:
         print(f"已经签到过了，签到获得{netdiskBonus}M空间")
-        notifyuser(f"已经签到过了，签到获得{netdiskBonus}M空间")
+        notify_user(token=TOKEN, msg=f"已经签到过了，签到获得{netdiskBonus}M空间")
     headers = {
         'User-Agent':'Mozilla/5.0 (Linux; Android 5.1.1; SM-G930K Build/NRD90M; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/74.0.3729.136 Mobile Safari/537.36 Ecloud/8.6.3 Android/22 clientId/355325117317828 clientModel/SM-G930K imsi/460071114317824 clientChannelId/qq proVersion/1.0.6',
         "Referer" : "https://m.cloud.189.cn/zhuanti/2016/sign/index.jsp?albumBackupOpened=1",
@@ -58,14 +60,14 @@ def main():
     else:
         description = response.json()['description']
         print(f"抽奖获得{description}")
-        notifyuser(f"抽奖获得{description}")
+        notify_user(token=TOKEN, msg=f"抽奖获得{description}")
     response = s.get(url2,headers=headers)
     if ("errorCode" in response.text):
         print(response.text)
     else:
         description = response.json()['description']
         print(f"抽奖获得{description}")
-        notifyuser(f"抽奖获得{description}")
+        notify_user(token=TOKEN, msg=f"抽奖获得{description}")
 
 BI_RM = list("0123456789abcdefghijklmnopqrstuvwxyz")
 def int2char(a):
@@ -139,10 +141,13 @@ def login(username, password):
         "paramId": paramId
         }
     r = s.post(url, data=data, headers=headers, timeout=5)
-    if(r.json()['result'] == 0):
-        print(r.json()['msg'])
+    rs = r.json()
+    msg = rs["msg"]
+    if(rs['result'] == RESULT_SUCCESS):
+        print(msg)
     else:
-        print(r.json()['msg'])
+        print(msg)
+        notify_user(token=TOKEN, msg=msg)
     redirect_url = r.json()['toUrl']
     r = s.get(redirect_url)
     return s
